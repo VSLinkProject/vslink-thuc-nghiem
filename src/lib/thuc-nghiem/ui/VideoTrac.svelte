@@ -1,9 +1,11 @@
 <!--
 	Video ky hieu cho bai nhan dien: lap lai, KHONG hien ten tu, khong co dieu khien
 	nao lo dap an. Co nut xem cham 0,5x.
-	Video QIPEDC in san TEN TU o goc tren ben phai -> phu mot mieng cung mau nen
-	(#186e8f, lay mau tu video) len vung do. Khung giu dung ti le video nen mieng phu
-	luon nam dung cho.
+	Video QIPEDC in san TEN TU o goc tren ben phai. Che 2 lop cho chac:
+	  1. clip-path CAT HAN goc do khoi video -> lo ra nen khung cung mau (#186e8f, lay
+	     mau tu video). Khong phu thuoc thu tu ve (Chrome co the dua video len lop
+	     phan cung rieng, ve de len moi thu).
+	  2. them mot o cung mau phu len tren (z-index).
 -->
 <script lang="ts">
 	import Turtle from '@lucide/svelte/icons/turtle';
@@ -62,7 +64,8 @@
 		position: relative;
 		border-radius: var(--bo);
 		overflow: hidden;
-		background: #0f1c2e;
+		background: #186e8f;
+		isolation: isolate;
 	}
 	.che-ten {
 		position: absolute;
@@ -79,6 +82,8 @@
 		height: 100%;
 		object-fit: fill;
 		display: block;
+		/* bo goc tren phai (30% ngang x 17% doc) khoi video */
+		clip-path: polygon(0 0, 70% 0, 70% 17%, 100% 17%, 100% 100%, 0 100%);
 	}
 	.phu {
 		position: absolute;
