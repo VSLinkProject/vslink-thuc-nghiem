@@ -14,7 +14,6 @@
 	let cham = $state(false);
 	let trangThai = $state<'tai' | 'chay' | 'loi'>('tai');
 	let tiLe = $state('16 / 9');
-	const laQipedc = $derived(!!src && (/qipedc/.test(src) || /\/video\/\d+\.mp4/.test(src)));
 
 	$effect(() => {
 		void src;
@@ -46,7 +45,7 @@
 				onerror={() => (trangThai = 'loi')}
 			></video>
 		{/key}
-		{#if laQipedc}<div class="che-ten" aria-hidden="true" data-testid="che-ten"></div>{/if}
+		<div class="che-ten" aria-hidden="true" data-testid="che-ten"></div>
 		{#if trangThai === 'tai'}<p class="phu">Đang tải video…</p>{/if}
 		{#if trangThai === 'loi'}<p class="phu"><VideoOff size={22} /> Không tải được video. Báo người hướng dẫn nhé.</p>{/if}
 	{:else}
@@ -69,8 +68,8 @@
 		position: absolute;
 		top: 0;
 		right: 0;
-		width: 40%;
-		height: 18%;
+		width: 30%;
+		height: 17%;
 		background: #186e8f;
 		pointer-events: none;
 	}
