@@ -16,7 +16,7 @@
 // | B  | Con bò (56)       | 2    | 0,948   | 2,13 s |
 
 /** Tang moi lan sua web: hien o goc tren de biet web da cap nhat chua. */
-export const PHIEN_BAN = 'bản 4 · che tên từ';
+export const PHIEN_BAN = 'bản 5 · học xong sớm';
 
 export type MaBo = 'A' | 'B';
 export type DieuKien = 'co-phan-hoi' | 'khong-phan-hoi';
@@ -35,20 +35,31 @@ export const KE_HOACH: Record<Nhom, [{ bo: MaBo; dk: DieuKien }, { bo: MaBo; dk:
 	4: [{ bo: 'B', dk: 'khong-phan-hoi' }, { bo: 'A', dk: 'co-phan-hoi' }]
 };
 
-/** Thoi gian moi buoc (giay). ?nhanh=1 tren URL -> rut con vai giay de nhom chay thu. */
-export const THOI_GIAN = { hoc: 300 } as const;
-export const THOI_GIAN_NHANH = { hoc: 20 } as const;
+/**
+ * Thoi gian moi buoc hoc (giay). hoc = toi da (het gio tu chuyen); som = sau bao lau thi
+ * duoc bam "Minh hoc xong roi" (va phai da ky thu ca 4 tu it nhat 1 lan).
+ * Thoi gian hoc that cua tung nguoi duoc ghi lai (su_kien ket-thuc-hoc) de dua vao phan tich.
+ * ?nhanh=1 tren URL -> rut con vai giay de nhom chay thu.
+ */
+export const THOI_GIAN = { hoc: 300, som: 60 } as const;
+export const THOI_GIAN_NHANH = { hoc: 45, som: 3 } as const;
 
 /** Bai sau: so lan ky duoc tinh cho moi tu (lan bi bo vi qua ngan / khong thay tay khong tinh). */
 export const SO_LAN_KY_LAI = 1;
 /** Bai sau: qua so giay nay chua ky duoc -> hien nut "Bỏ qua từ này". */
 export const CHO_BO_QUA_GIAY = 30;
 
-/** 3 cau sau moi bo (thang 1–7). */
+/** 3 cau sau moi bo (thang 1–7). cau = noi dung ghi vao du lieu; giai_thich = dong nho giup hieu cau. */
 export const CAU_HOI = [
-	'Mình thấy thích khi học bộ từ này.',
-	'Cách học vừa rồi giúp mình biết cần sửa chỗ nào.',
-	'Mình tự tin sẽ ký đúng các từ vừa học.'
+	{ cau: 'Mình thấy thích khi học bộ từ này.', giai_thich: 'Phần học vừa rồi có vui, có làm bạn muốn học tiếp không?' },
+	{
+		cau: 'Cách học vừa rồi giúp mình biết cần sửa chỗ nào.',
+		giai_thich: 'Trong lúc học, bạn có biết mình đang ký sai ở đâu (tay, vị trí, động tác) để sửa không?'
+	},
+	{
+		cau: 'Mình tự tin sẽ ký đúng các từ vừa học.',
+		giai_thich: 'Nếu bây giờ phải ký lại 4 từ này mà không xem video mẫu, bạn tự tin đến đâu?'
+	}
 ] as const;
 
 export const NHAN_THANG = { 1: 'Hoàn toàn không đồng ý', 4: 'Phân vân', 7: 'Hoàn toàn đồng ý' } as const;
