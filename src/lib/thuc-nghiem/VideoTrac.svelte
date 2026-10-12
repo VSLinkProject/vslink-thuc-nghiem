@@ -72,6 +72,7 @@
 		height: 17%;
 		background: #186e8f;
 		pointer-events: none;
+		z-index: 2;
 	}
 	video {
 		width: 100%;
