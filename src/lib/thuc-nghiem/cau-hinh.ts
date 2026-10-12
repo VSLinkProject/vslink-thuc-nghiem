@@ -15,6 +15,9 @@
 // | B  | Ngân hàng (219)   | 2    | 0,960   | 2,43 s |
 // | B  | Con bò (56)       | 2    | 0,948   | 2,13 s |
 
+/** Tang moi lan sua web: hien o goc tren de biet web da cap nhat chua. */
+export const PHIEN_BAN = 'bản 3 · che tên từ';
+
 export type MaBo = 'A' | 'B';
 export type DieuKien = 'co-phan-hoi' | 'khong-phan-hoi';
 export type Nhom = 1 | 2 | 3 | 4;

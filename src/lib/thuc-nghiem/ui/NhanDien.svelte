@@ -9,6 +9,7 @@
 	import { kho } from '../kho.svelte';
 	import { boCuaTu, dapAn, thuTuTu } from '../logic';
 	import { napVideoThucNghiem } from '../video';
+	import { napMoHinh } from '$lib/loi/mo-hinh';
 	import VideoTrac from './VideoTrac.svelte';
 	import ArrowRight from '@lucide/svelte/icons/arrow-right';
 
@@ -23,7 +24,10 @@
 	let video = $state<Record<number, VideoMau | null>>({});
 	onMount(() => {
 		napVideoThucNghiem().then((v) => (video = v));
+		napMoHinh().catch(() => {}); // tai san mo hinh cho phan hoc, khoi cho luc sau
 	});
+	// tai truoc 2 video ke tiep -> bam "Cau tiep" la video hien ngay
+	const keTiep = $derived(ds.slice(k + 1, k + 3).map((i) => video[i]?.url).filter((u): u is string => !!u));
 
 	let chon = $state<number | null>(null);
 	let batDauCau = $state(performance.now());
@@ -61,6 +65,7 @@
 	<p class="dem" data-testid="dem-cau">Câu {k + 1}/{ds.length}</p>
 
 	<VideoTrac src={video[tu]?.url ?? null} />
+	{#each keTiep as u (u)}<video class="tai-truoc" src={u} preload="auto" muted playsinline aria-hidden="true"></video>{/each}
 
 	<div class="lua" role="group" aria-label="Chọn nghĩa">
 		{#each luaChon as i (i)}
@@ -83,6 +88,9 @@
 </section>
 
 <style>
+	.tai-truoc {
+		display: none;
+	}
 	.bai {
 		max-width: 760px;
 		margin-inline: auto;

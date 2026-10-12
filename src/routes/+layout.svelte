@@ -2,6 +2,7 @@
 	import '@fontsource-variable/nunito';
 	import '../app.css';
 	import Logo from '$lib/thanh-phan/Logo.svelte';
+	import { PHIEN_BAN } from '$lib/thuc-nghiem/cau-hinh';
 
 	let { children } = $props();
 </script>
@@ -15,6 +16,7 @@
 	<div class="khung-trang thanh">
 		<span class="thuong-hieu"><Logo cao={26} /></span>
 		<span class="nhan">Thực nghiệm học ký hiệu</span>
+		<span class="ban" data-testid="phien-ban">{PHIEN_BAN}</span>
 	</div>
 </header>
 
@@ -44,6 +46,11 @@
 	.nhan {
 		color: var(--chu-phu);
 		font-weight: 800;
+	}
+	.ban {
+		margin-left: auto;
+		color: var(--chu-phu);
+		font-size: 0.8rem;
 	}
 	main {
 		padding-block: 24px 40px;

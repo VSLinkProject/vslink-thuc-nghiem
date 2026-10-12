@@ -1,6 +1,9 @@
 <!--
 	Video ky hieu cho bai nhan dien: lap lai, KHONG hien ten tu, khong co dieu khien
 	nao lo dap an. Co nut xem cham 0,5x.
+	Video QIPEDC in san TEN TU o goc tren ben phai -> phu mot mieng cung mau nen
+	(#186e8f, lay mau tu video) len vung do. Khung giu dung ti le video nen mieng phu
+	luon nam dung cho.
 -->
 <script lang="ts">
 	import Turtle from '@lucide/svelte/icons/turtle';
@@ -10,6 +13,7 @@
 	let video: HTMLVideoElement | undefined = $state();
 	let cham = $state(false);
 	let trangThai = $state<'tai' | 'chay' | 'loi'>('tai');
+	let tiLe = $state('16 / 9');
 
 	$effect(() => {
 		void src;
@@ -21,7 +25,7 @@
 	});
 </script>
 
-<div class="khung" data-trang-thai={trangThai}>
+<div class="khung" data-trang-thai={trangThai} style:aspect-ratio={tiLe}>
 	{#if src}
 		{#key src}
 			<video
@@ -34,10 +38,14 @@
 				preload="auto"
 				disablepictureinpicture
 				data-testid="video-nhan-dien"
+				onloadedmetadata={() => {
+					if (video?.videoWidth && video.videoHeight) tiLe = `${video.videoWidth} / ${video.videoHeight}`;
+				}}
 				onplaying={() => (trangThai = 'chay')}
 				onerror={() => (trangThai = 'loi')}
 			></video>
 		{/key}
+		<div class="che-ten" aria-hidden="true" data-testid="che-ten"></div>
 		{#if trangThai === 'tai'}<p class="phu">Đang tải video…</p>{/if}
 		{#if trangThai === 'loi'}<p class="phu"><VideoOff size={22} /> Không tải được video. Báo người hướng dẫn nhé.</p>{/if}
 	{:else}
@@ -52,15 +60,24 @@
 <style>
 	.khung {
 		position: relative;
-		aspect-ratio: 16 / 9;
 		border-radius: var(--bo);
 		overflow: hidden;
 		background: #0f1c2e;
 	}
+	.che-ten {
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 30%;
+		height: 17%;
+		background: #186e8f;
+		pointer-events: none;
+		z-index: 2;
+	}
 	video {
 		width: 100%;
 		height: 100%;
-		object-fit: contain;
+		object-fit: fill;
 		display: block;
 	}
 	.phu {
