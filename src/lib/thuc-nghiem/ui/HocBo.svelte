@@ -1,5 +1,7 @@
 <!--
-	Hoc mot bo 4 tu trong dung THOI_GIAN.hoc giay (het gio tu chuyen buoc).
+	Hoc mot bo 4 tu, toi da THOI_GIAN.hoc giay (het gio tu chuyen buoc). Sau THOI_GIAN.som
+	giay va khi da ky thu ca 4 tu, nguoi hoc duoc bam "Minh hoc xong roi" de sang som
+	(bam 2 lan de tranh bam nham). Thoi gian hoc that duoc ghi (su_kien ket-thuc-hoc).
 	Hai dieu kien dung CHUNG trang nay, chi khac phan hoi:
 	  co-phan-hoi    : cham Dung / Gan dung / Chua dung + bo phan khac mau + loi Meo soan san
 	  khong-phan-hoi : van bat camera tu tap, mo hinh van chay ngam de GHI so lieu, nhung
@@ -26,6 +28,8 @@
 	import type { LuotHoc } from '../logic';
 	import { napVideoThucNghiem } from '../video';
 	import DongHo from './DongHo.svelte';
+	import { THOI_GIAN, THOI_GIAN_NHANH } from '../cau-hinh';
+	import CircleCheck from '@lucide/svelte/icons/circle-check';
 	import Star from '@lucide/svelte/icons/star';
 	import Sparkles from '@lucide/svelte/icons/sparkles';
 	import Target from '@lucide/svelte/icons/target';
@@ -53,6 +57,18 @@
 	let soLanKyTuNay = $state(0);
 	let id = 0;
 	let daXong = false;
+	// duoc hoc xong som: sau `som` giay va da ky thu ca 4 tu
+	const som = $derived(thoiGian <= THOI_GIAN_NHANH.hoc ? THOI_GIAN_NHANH.som : THOI_GIAN.som);
+	let bayGio = $state(Date.now());
+	let xacNhan = $state(false);
+	const batDauHoc = $derived((kho.phien?.hetGio ?? Date.now() + thoiGian * 1000) - thoiGian * 1000);
+	const conCho = $derived(Math.max(0, Math.ceil((batDauHoc + som * 1000 - bayGio) / 1000)));
+	const chuaTap = $derived(luot.tu.filter((i) => !dem[i]?.ky));
+	const duocXong = $derived(conCho === 0 && chuaTap.length === 0);
+	$effect(() => {
+		const h = setInterval(() => (bayGio = Date.now()), 500);
+		return () => clearInterval(h);
+	});
 
 	onMount(() => {
 		napVideoThucNghiem().then((v) => (video = v));
@@ -123,10 +139,33 @@
 		loiCham = null;
 	}
 
+	function xongSom() {
+		if (!duocXong) return;
+		if (!xacNhan) {
+			xacNhan = true;
+			setTimeout(() => (xacNhan = false), 4000);
+			return;
+		}
+		ketThuc('som');
+	}
+
 	function hetGio() {
+		ketThuc('het-gio');
+	}
+
+	function ketThuc(cach: 'som' | 'het-gio') {
 		if (daXong) return;
 		daXong = true;
 		phien.dung();
+		kho.ghi({
+			buoc,
+			su_kien: 'ket-thuc-hoc',
+			lan: luot.lan,
+			bo: luot.bo,
+			dieu_kien: luot.dk,
+			ms: Math.min(Date.now() - batDauHoc, thoiGian * 1000),
+			ghi_chu: `cach=${cach}`
+		});
 		for (const i of luot.tu) {
 			const x = dem[i] ?? { ky: 0, dung: 0, mo: 0 };
 			kho.ghi({
@@ -150,14 +189,26 @@
 		<p class="nhan-nho">Phần học {luot.lan}/2 · {coPhanHoi ? 'Có Mèo chấm' : 'Tự tập theo video'}</p>
 		<h1>Học 4 từ</h1>
 	</div>
-	<DongHo hetGio={kho.phien?.hetGio ?? Date.now() + thoiGian * 1000} {thoiGian} onHet={hetGio} />
+	<div class="gio-xong">
+		<DongHo hetGio={kho.phien?.hetGio ?? Date.now() + thoiGian * 1000} {thoiGian} onHet={hetGio} />
+		<button class="nut" class:xac-nhan={xacNhan} disabled={!duocXong} onclick={xongSom} data-testid="xong-som">
+			<CircleCheck size={18} />
+			{xacNhan ? 'Bấm lần nữa để sang phần sau' : 'Mình học xong rồi'}
+		</button>
+		{#if !duocXong}
+			<small class="vi-sao">
+				{#if chuaTap.length}Ký thử cả 4 từ trước đã (còn: {chuaTap.map((i) => NHAN[i]).join(', ')})
+				{:else}Mở nút sau {conCho} giây nữa{/if}
+			</small>
+		{/if}
+	</div>
 </div>
 
 <div class="tab-tu" role="tablist" aria-label="4 từ cần học">
 	{#each luot.tu as i, j (i)}
 		<button role="tab" aria-selected={k === j} onclick={() => chonTu(j)} data-testid="tab-tu">
 			{NHAN[i]}
-			{#if coPhanHoi && dem[i]?.dung}<Star size={14} />{/if}
+			{#if coPhanHoi && dem[i]?.dung}<Star size={14} />{:else if dem[i]?.ky}<i class="da-tap" title="Đã tập"></i>{/if}
 		</button>
 	{/each}
 </div>
@@ -209,7 +260,7 @@
 				{:else}Xem video mẫu, rồi tự ký theo trước camera. Ở phần này web không chấm.{/if}
 			</p>
 		{/if}
-		<p class="meo-nho">Bấm tên từ ở trên để chuyển từ. Học cả 4 từ trước khi hết giờ nhé.</p>
+		<p class="meo-nho">Bấm tên từ ở trên để chuyển từ. Tập đủ 4 từ, thấy ổn thì bấm “Mình học xong rồi”, hoặc học tới khi hết giờ.</p>
 	</section>
 </div>
 
@@ -224,6 +275,20 @@
 	}
 	h1 {
 		margin: 0;
+	}
+	.gio-xong {
+		display: grid;
+		justify-items: end;
+		gap: 6px;
+	}
+	.gio-xong .nut.xac-nhan {
+		background: var(--xanh-la);
+	}
+	.vi-sao {
+		color: var(--chu-phu);
+		font-size: 0.82rem;
+		max-width: 280px;
+		text-align: right;
 	}
 	.tab-tu {
 		display: flex;
@@ -244,6 +309,12 @@
 		font-weight: 850;
 		font-size: 1.05rem;
 		cursor: pointer;
+	}
+	.da-tap {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--xanh-la);
 	}
 	.tab-tu button[aria-selected='true'] {
 		background: var(--nut);
