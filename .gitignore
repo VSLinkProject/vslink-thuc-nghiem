@@ -1,0 +1,27 @@
+node_modules
+/build
+/.svelte-kit
+/package
+.env
+.env.*
+!.env.example
+vite.config.ts.timestamp-*
+# sinh ra tu dong tu node_modules (scripts/chep-tai-nguyen.mjs)
+/static/mediapipe/
+/static/ort/
+# tai luc build (scripts/tai-mo-hinh.mjs)
+/static/models/holistic_landmarker.task
+/test-results
+/playwright-report
+/anh-chup/
+# nghien cuu ghep cau: du lieu sinh / ket qua chay (tao lai duoc)
+/nghien-cuu/ghep-cau/du-lieu/sinh/
+/nghien-cuu/ghep-cau/du-lieu/ket-qua/
+__pycache__/
+.pytest_cache/
+# Worker chay tai cho: key Gemini nam trong worker/.dev.vars (KHONG dua len git)
+/worker/.dev.vars
+/worker/.wrangler/
+
+# video QIPEDC tai luc build (scripts/tai-video.mjs), khong dua len git
+/static/video/
